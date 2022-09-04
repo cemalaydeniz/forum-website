@@ -2,7 +2,7 @@
 
 namespace ForumWebsite.Models.Authentication
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<string>
     {
         public User()
         {
