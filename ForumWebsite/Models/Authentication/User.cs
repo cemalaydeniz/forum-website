@@ -11,6 +11,7 @@ namespace ForumWebsite.Models.Authentication
         }
 
         public DateTime Birthday { get; set; }
+        public string? AboutMe { get; set; }
 
         // Relations
         public virtual ICollection<Post> Posts { get; set; }

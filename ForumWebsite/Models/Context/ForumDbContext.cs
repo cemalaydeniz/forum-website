@@ -16,6 +16,12 @@ namespace ForumWebsite.Models.Context
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<User>(entity =>
+            {
+                entity.Property(x => x.AboutMe)
+                    .HasMaxLength(255);
+            });
+
             builder.Entity<Post>(entity =>
             {
                 entity.ToTable("post");
