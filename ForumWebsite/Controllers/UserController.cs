@@ -115,5 +115,19 @@ namespace ForumWebsite.Controllers
 
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("LogoutSuccess");
+        }
+
+        [HttpGet]
+        public IActionResult LogoutSuccess()
+        {
+            Response.Headers.Add("REFRESH", "5;/Home/Index");
+            return View();
+        }
     }
 }
