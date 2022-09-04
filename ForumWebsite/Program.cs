@@ -1,6 +1,19 @@
+using ForumWebsite.Models.Context;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .Build();
+
+builder.Services.AddDbContext<ForumDbContext>(options =>
+{
+    options.UseMySql(configuration.GetValue<string>("ConnectionStrings:DefaultConnection"), ServerVersion.Parse("8.0.29-mysql"));
+});
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
