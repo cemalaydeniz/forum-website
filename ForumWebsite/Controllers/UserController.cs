@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ForumWebsite.Models.Authentication;
 using ForumWebsite.Models.ViewMoels;
+using ForumWebsite.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,7 +39,7 @@ namespace ForumWebsite.Controllers
                 var result = await _userManager.CreateAsync(newUser, viewModel.Password);
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(newUser, "Member");
+                    await _userManager.AddToRoleAsync(newUser, StringLibrary.RoleNames.Member);
 
                     _logger.LogInformation("--- A new user is registered: " + newUser.UserName);
 
@@ -93,7 +94,7 @@ namespace ForumWebsite.Controllers
                     {
                         if (result.IsLockedOut)
                         {
-                            ModelState.AddModelError("AccountLocked", "The account is locked for 5 minutes due to the 5 failed login attempts.");
+                            ModelState.AddModelError(StringLibrary.LoginErrors.AccountLockedCode, StringLibrary.LoginErrors.AccountLockedDescription);
                         }
                         else
                         {
@@ -102,11 +103,11 @@ namespace ForumWebsite.Controllers
                             {
                                 await _userManager.SetLockoutEndDateAsync(user, new DateTimeOffset(DateTime.Now.AddMinutes(5)));
 
-                                ModelState.AddModelError("AccountLocked", "The account is locked for 5 minutes due to the 5 failed login attempts.");
+                                ModelState.AddModelError(StringLibrary.LoginErrors.AccountLockedCode, StringLibrary.LoginErrors.AccountLockedDescription);
                             }
                             else
                             {
-                                ModelState.AddModelError("NoUserFound", "The email address could not be found.");
+                                ModelState.AddModelError(StringLibrary.LoginErrors.UserNotFoundCode, StringLibrary.LoginErrors.UserNotFoundDescription);
                             }
                         }
                     }

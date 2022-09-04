@@ -1,4 +1,5 @@
 ﻿using ForumWebsite.Models.Authentication;
+using ForumWebsite.Utility;
 using Microsoft.AspNetCore.Identity;
 
 namespace ForumWebsite.Models.Context
@@ -17,19 +18,19 @@ namespace ForumWebsite.Models.Context
                     new Role
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Name = "Admin",
+                        Name = StringLibrary.RoleNames.Admin,
                         CreatedTimestamp = DateTime.Now
                     },
                     new Role
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Name = "Moderator",
+                        Name = StringLibrary.RoleNames.Moderator,
                         CreatedTimestamp = DateTime.Now
                     },
                     new Role
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Name = "Member",
+                        Name = StringLibrary.RoleNames.Member,
                         CreatedTimestamp = DateTime.Now
                     }
                 };
