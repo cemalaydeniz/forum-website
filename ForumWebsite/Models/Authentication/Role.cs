@@ -2,7 +2,7 @@
 
 namespace ForumWebsite.Models.Authentication
 {
-    public class Role : IdentityRole<string>
+    public class Role : IdentityRole
     {
     }
 }

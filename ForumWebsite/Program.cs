@@ -1,3 +1,6 @@
+using AutoMapper;
+using ForumWebsite.Mappings;
+using ForumWebsite.Models.Authentication;
 using ForumWebsite.Models.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +16,48 @@ builder.Services.AddDbContext<ForumDbContext>(options =>
 {
     options.UseMySql(configuration.GetValue<string>("ConnectionStrings:DefaultConnection"), ServerVersion.Parse("8.0.29-mysql"));
 });
+
+builder.Services.AddIdentity<User, Role>(options =>
+{
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+
+    options.SignIn.RequireConfirmedEmail = false;
+
+    options.User.RequireUniqueEmail = true;
+}).AddEntityFrameworkStores<ForumDbContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/User/Login";
+    options.LogoutPath = "/User/Logout";
+    options.AccessDeniedPath = "/User/AccessDenied";
+
+    options.Cookie = new CookieBuilder()
+    {
+        Name = "ForumWebsiteCookie",
+        HttpOnly = false,
+        SameSite = SameSiteMode.Lax,
+        SecurePolicy = CookieSecurePolicy.Always
+    };
+
+    options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+});
+
+var autoMapper = new MapperConfiguration(options =>
+{
+    options.AddProfile(new AuthenticationMapping());
+});
+
+builder.Services.AddSingleton(autoMapper.CreateMapper());
 
 builder.Services.AddControllersWithViews();
 
@@ -31,6 +76,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
