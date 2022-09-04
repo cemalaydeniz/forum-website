@@ -2,6 +2,7 @@ using AutoMapper;
 using ForumWebsite.Mappings;
 using ForumWebsite.Models.Authentication;
 using ForumWebsite.Models.Context;
+using ForumWebsite.Validators;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +33,9 @@ builder.Services.AddIdentity<User, Role>(options =>
     options.SignIn.RequireConfirmedEmail = false;
 
     options.User.RequireUniqueEmail = true;
-}).AddEntityFrameworkStores<ForumDbContext>();
+}).AddPasswordValidator<PasswordValidation>()
+.AddUserValidator<UserValidation>()
+.AddEntityFrameworkStores<ForumDbContext>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
