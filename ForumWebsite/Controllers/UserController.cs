@@ -38,7 +38,7 @@ namespace ForumWebsite.Controllers
                 var result = await _userManager.CreateAsync(newUser, viewModel.Password);
                 if (result.Succeeded)
                 {
-                    // TODO: Add roles and other things here
+                    await _userManager.AddToRoleAsync(newUser, "Member");
 
                     _logger.LogInformation("--- A new user is registered: " + newUser.UserName);
 
