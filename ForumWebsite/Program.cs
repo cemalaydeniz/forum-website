@@ -66,6 +66,9 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+DbInitialization dbInit = new DbInitialization();
+dbInit.InitializeRoles(app.Services);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
