@@ -46,7 +46,7 @@ namespace ForumWebsite.Controllers
         public async Task<IActionResult> Index(ProfileViewModel viewModel)
         {
             if (User.Identity == null)
-                return View();
+                return Redirect("/User/AccessDenied");
 
             if (ModelState.IsValid)
             {
