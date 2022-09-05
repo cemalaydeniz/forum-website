@@ -1,6 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using ForumWebsite.Models.Authentication
-@inject SignInManager<User> SignInManager
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,10 +28,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="Index" asp-route-page="1">Forum</a>
+                        </li>
                     </ul>
                 </div>
                 <ul class="navbar-nav">
-                    @if (SignInManager.IsSignedIn(User))
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Profile" asp-action="Index">Hello @User.Identity?.Name</a>

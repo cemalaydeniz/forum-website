@@ -2,6 +2,7 @@ using AutoMapper;
 using ForumWebsite.Mappings;
 using ForumWebsite.Models.Authentication;
 using ForumWebsite.Models.Context;
+using ForumWebsite.Services;
 using ForumWebsite.Validators;
 using Microsoft.EntityFrameworkCore;
 
@@ -61,6 +62,9 @@ var autoMapper = new MapperConfiguration(options =>
 });
 
 builder.Services.AddSingleton(autoMapper.CreateMapper());
+
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 builder.Services.AddControllersWithViews();
 

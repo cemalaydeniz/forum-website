@@ -1,0 +1,38 @@
+﻿@model List<ForumWebsite.Models.Post>
+
+<h3>Forum</h3>
+<hr />
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <h6><a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="NewPost">New Post</a></h6>
+}
+
+<hr />
+
+@if (Model == null || Model.Count == 0)
+{
+    <h5>There is no post.</h5>
+}
+else
+{
+    <table>
+        <tr>
+            <td class="text-dark">Header</td>
+            <td class="text-dark">User</td>
+            <td class="text-dark">Closed</td>
+        </tr>
+        @foreach (var post in Model)
+        {
+            <tr>
+                <td><a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="PostView" asp-route-postId="@post.Id">@post.Header</a></td>
+                <td>@post.User.UserName</td>
+                <td>@post.IsClosed</td>
+            </tr>
+        }
+    </table>
+
+    <input type="button" value="Previous" asp-area="" asp-controller="Forum" asp-action="Index" asp-route="@(int.Parse(ViewBag.Page.ToString()) - 1)" />
+    @ViewBag.Page
+    <input type="button" value="Next" asp-area="" asp-controller="Forum" asp-action="Index" asp-route="@(int.Parse(ViewBag.Page.ToString()) + 1)" />
+}

@@ -1,0 +1,31 @@
+﻿@model ForumWebsite.Models.ViewMoels.EditPostViewModel
+
+<h3>Edit Post</h3>
+<hr />
+
+<form asp-action="EditPost" asp-route-postId="@Model.PostId">
+    <table>
+        <tr>
+            <td colspan="3"><div asp-validation-summary="All"></div></td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Header"></label></td>
+            <td><input asp-for="Header" /></td>
+            <td><span asp-validation-for="Header"></span></td>
+        </tr>
+        <tr>
+            <td><label asp-for="Body"></label></td>
+            <td><textarea asp-for="Body" style="resize:none" cols="18" rows="20"></textarea></td>
+            <td><span asp-validation-for="Body"></span></td>
+        </tr>
+        <tr>
+            <td colspan="3"><input type="submit" value="Save" /></td>
+        </tr>
+    </table>
+</form>
+
+@section scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+}

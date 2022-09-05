@@ -1,0 +1,26 @@
+﻿@model ForumWebsite.Models.ViewMoels.EditCommentViewModel
+
+<h3>Edit Comment</h3>
+<hr />
+
+<form asp-action="EditComment" asp-route-commentId="@Model.CommentId">
+    <table>
+        <tr>
+            <td colspan="3"><div asp-validation-summary="All"></div></td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Body"></label></td>
+            <td><textarea asp-for="Body" style="resize:none" cols="30" rows="5"></textarea></td>
+            <td><span asp-validation-for="Body"></span></td>
+        </tr>
+        <tr>
+            <td colspan="3"><input type="submit" value="Save" /></td>
+        </tr>
+    </table>
+</form>
+
+@section scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+}
