@@ -28,8 +28,17 @@ namespace ForumWebsite.Controllers
         public async Task<IActionResult> Index([FromQuery]int page)
         {
             List<Post> posts = await _postService.GetPostsPaginatedAsync(page, PAGE_SIZE);
-
             ViewBag.Page = page;
+
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                User user = await _userManager.FindByNameAsync(User.Identity?.Name);
+                if (user != null)
+                {
+                    ViewBag.CanDeletePost = await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Admin);
+                }
+            }
+
             return View(posts);
         }
 
@@ -72,6 +81,15 @@ namespace ForumWebsite.Controllers
             Post? post = await _postService.GetPostAsync(postId);
             if (post != null)
             {
+                if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    User user = await _userManager.FindByNameAsync(User.Identity.Name);
+                    if (user != null)
+                    {
+                        ViewBag.CanEdit = await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Admin) || await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Moderator);
+                    }
+                }
+
                 return View(new PostViewModel()
                 {
                     Post = post,
@@ -113,16 +131,13 @@ namespace ForumWebsite.Controllers
         [HttpGet]
         public async Task<IActionResult> EditPost([FromQuery]long postId)
         {
-            if (User.Identity == null)
-                return Redirect("/User/AccessDenied");
-
             User user = await _userManager.FindByNameAsync(User.Identity?.Name);
             if (user != null)
             {
                 Post? post = await _postService.GetPostAsync(postId);
                 if (post != null)
                 {
-                    if (post.UserId != user.Id)
+                    if (post.UserId != user.Id && !await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Admin) && !await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Moderator))
                         return Redirect("/User/AccessDenied");
 
                     return View(new EditPostViewModel()
@@ -149,9 +164,6 @@ namespace ForumWebsite.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPost([FromQuery]long postId, EditPostViewModel viewModel)
         {
-            if (User.Identity == null)
-                return Redirect("/User/AccessDenied");
-
             if (ModelState.IsValid)
             {
                 User user = await _userManager.FindByNameAsync(User.Identity?.Name);
@@ -160,7 +172,7 @@ namespace ForumWebsite.Controllers
                     Post? post = await _postService.GetPostAsync(postId);
                     if (post != null)
                     {
-                        if (post.UserId != user.Id)
+                        if (post.UserId != user.Id && !await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Admin) && !await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Moderator))
                             return Redirect("/User/AccessDenied");
 
                         if (await _postService.EditPostAsync(postId, viewModel))
@@ -190,16 +202,13 @@ namespace ForumWebsite.Controllers
         [HttpGet]
         public async Task<IActionResult> EditComment([FromQuery]long commentId)
         {
-            if (User.Identity == null)
-                return Redirect("/User/AccessDenied");
-
             User user = await _userManager.FindByNameAsync(User.Identity?.Name);
             if (user != null)
             {
                 Comment? comment = await _commentService.GetCommentAsync(commentId);
                 if (comment != null)
                 {
-                    if (comment.UserId != user.Id)
+                    if (comment.UserId != user.Id && !await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Admin) && !await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Moderator))
                         return Redirect("/User/AccessDenied");
 
                     return View(new EditCommentViewModel()
@@ -225,9 +234,6 @@ namespace ForumWebsite.Controllers
         [HttpPost]
         public async Task<IActionResult> EditComment([FromQuery]long commentId, EditCommentViewModel viewModel)
         {
-            if (User.Identity == null)
-                return Redirect("/User/AccessDenied");
-
             if (ModelState.IsValid)
             {
                 User user = await _userManager.FindByNameAsync(User.Identity?.Name);
@@ -236,7 +242,7 @@ namespace ForumWebsite.Controllers
                     Comment? comment = await _commentService.GetCommentAsync(commentId);
                     if (comment != null)
                     {
-                        if (comment.UserId != user.Id)
+                        if (comment.UserId != user.Id && !await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Admin) && !await _userManager.IsInRoleAsync(user, StringLibrary.RoleNames.Moderator))
                             return Redirect("/User/AccessDenied");
 
                         if (await _commentService.EditCommentAsync(commentId, viewModel))
@@ -260,6 +266,42 @@ namespace ForumWebsite.Controllers
             }
 
             return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> DeletePost([FromQuery]long postId, [FromQuery]int returnPage)
+        {
+            if (!await _postService.DeletePostAsync(postId))
+            {
+                ModelState.AddModelError(StringLibrary.PostErrors.DeletePostRoleFailCode, StringLibrary.PostErrors.DeletePostRoleFailDescription);
+            }
+
+            return RedirectToAction("Index", new { page = returnPage });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> ClosePost([FromQuery]long postId, [FromQuery]int returnPage)
+        {
+            if (!await _postService.ClosePostAsync(postId))
+            {
+                ModelState.AddModelError(StringLibrary.PostErrors.DeletePostRoleFailCode, StringLibrary.PostErrors.DeletePostRoleFailDescription);
+            }
+
+            return RedirectToAction("Index", new { page = returnPage });
+        }
+
+        [Authorize(Roles = "Admin, Moderator")]
+        [HttpGet]
+        public async Task<IActionResult> DeleteComment([FromQuery]long commentId, [FromQuery]long returnPostId)
+        {
+            if (!await _commentService.DeleteCommentAsync(commentId))
+            {
+                ModelState.AddModelError(StringLibrary.PostErrors.DeleteCommentRoleFailCode, StringLibrary.PostErrors.DeleteCommentRoleFailDescription);
+            }
+
+            return RedirectToAction("PostView", new { postId = returnPostId });
         }
     }
 }

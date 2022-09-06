@@ -6,9 +6,8 @@
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
     <h6><a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="NewPost">New Post</a></h6>
+    <hr />
 }
-
-<hr />
 
 @if (Model == null || Model.Count == 0)
 {
@@ -21,6 +20,11 @@ else
             <td class="text-dark">Header</td>
             <td class="text-dark">User</td>
             <td class="text-dark">Closed</td>
+            @if (ViewBag.CanDeletePost != null && ViewBag.CanDeletePost)
+            {
+                <td class="text-dark">Delete Post</td>
+                <td class="text-dark">Close Post</td>
+            }
         </tr>
         @foreach (var post in Model)
         {
@@ -28,11 +32,16 @@ else
                 <td><a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="PostView" asp-route-postId="@post.Id">@post.Header</a></td>
                 <td>@post.User.UserName</td>
                 <td>@post.IsClosed</td>
+                @if (ViewBag.CanDeletePost != null && ViewBag.CanDeletePost)
+                {
+                    <td><a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="DeletePost" asp-route-postId="@post.Id" asp-route-returnPage="@ViewBag.Page">Delete</a></td>
+                    <td><a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="ClosePost" asp-route-postId="@post.Id" asp-route-returnPage="@ViewBag.Page">Close</a></td>
+                }
             </tr>
         }
     </table>
 
-    <input type="button" value="Previous" asp-area="" asp-controller="Forum" asp-action="Index" asp-route="@(int.Parse(ViewBag.Page.ToString()) - 1)" />
+    <input type="button" value="Previous" asp-area="" asp-controller="Forum" asp-action="Index" asp-route-page="@(int.Parse(ViewBag.Page.ToString()) - 1)" />
     @ViewBag.Page
-    <input type="button" value="Next" asp-area="" asp-controller="Forum" asp-action="Index" asp-route="@(int.Parse(ViewBag.Page.ToString()) + 1)" />
+    <input type="button" value="Next" asp-area="" asp-controller="Forum" asp-action="Index" asp-route-page="@(int.Parse(ViewBag.Page.ToString()) + 1)" />
 }

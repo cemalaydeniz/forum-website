@@ -37,6 +37,15 @@
 
             public static readonly string CommentNotFoundCode = "CommentNotFound";
             public static readonly string CommentNotFoundDescription = "The comment could not be found.";
+
+            public static readonly string DeletePostRoleFailCode = "DeletePostRoleFail";
+            public static readonly string DeletePostRoleFailDescription = "You do not have a permission to delete a post.";
+
+            public static readonly string CloseRoleFailCode = "CloseRoleFail";
+            public static readonly string CloseRoleFailDescription = "You do not have a permission to close a post.";
+
+            public static readonly string DeleteCommentRoleFailCode = "DeleteCommentRoleFail";
+            public static readonly string DeleteCommentRoleFailDescription = "You do not have a permission to delete a comment.";
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@model ForumWebsite.Models.ViewMoels.PostViewModel
 
-@if (User.Identity != null && Model.Post?.User.UserName == User.Identity.Name)
+@if (User.Identity != null && (Model.Post?.User.UserName == User.Identity.Name || (ViewBag.CanEdit != null && ViewBag.CanEdit)) && !Model.Post.IsClosed)
 {
     <h6><a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="EditPost" asp-route-postId="@Model.Post?.Id">Edit Post</a></h6>
     <hr />
@@ -10,7 +10,7 @@
 <br />
 @Model.Post?.Body
 
-@if (User.Identity != null && User.Identity.IsAuthenticated)
+@if (User.Identity != null && User.Identity.IsAuthenticated && !Model.Post.IsClosed)
 {
     <hr />
     <h5>Comment on this post:</h5>
@@ -32,7 +32,12 @@
     </form>
 }
 
-@if (Model.Comments == null || Model.Comments.Count == 0)
+@if (Model.Post.IsClosed)
+{
+    <hr />
+    <h5>This post is closed.</h5>
+}
+else if (Model.Comments == null || Model.Comments.Count == 0)
 {
     <hr />
     <h5>There is no comment on this post.</h5>
@@ -47,7 +52,12 @@ else
             <br />
             @comment.Body
             <br />
-            @if (User.Identity != null && comment.User.UserName == User.Identity.Name)
+            @if (ViewBag.CanEdit != null && ViewBag.CanEdit && !Model.Post.IsClosed)
+            {
+                <a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="EditComment" asp-route-commentId="@comment.Id">Edit Comment</a>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="DeleteComment" asp-route-commentId="@comment.Id" asp-route-returnPostId="@Model.Post.Id">Delete Comment</a>
+            }
+            else if (User.Identity != null && comment.User.UserName == User.Identity.Name && !Model.Post.IsClosed)
             {
                 <a class="nav-link text-dark" asp-area="" asp-controller="Forum" asp-action="EditComment" asp-route-commentId="@comment.Id">Edit Comment</a>
             }

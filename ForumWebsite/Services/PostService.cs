@@ -54,6 +54,13 @@ namespace ForumWebsite.Services
         /// <param name="id">The Id of the post that is going to be deleted.</param>
         /// <returns>Returns true if the post is found and is deleted successfully.</returns>
         Task<bool> DeletePostAsync(long id);
+
+        /// <summary>
+        /// Closes a post.
+        /// </summary>
+        /// <param name="id">The Id of the post that is goind to be closed.</param>
+        /// <returns>Returns true if the post is found and is closed.</returns>
+        Task<bool> ClosePostAsync(long id);
     }
 
     public class PostService : IPostService
@@ -177,6 +184,27 @@ namespace ForumWebsite.Services
                     await dbContext.SaveChangesAsync();
 
                     logger?.LogInformation("--- A post has been deleted: " + searchResult.Id);
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        public async Task<bool> ClosePostAsync(long id)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ForumDbContext>();
+                var logger = scope.ServiceProvider.GetService<ILogger<CommentService>>();
+
+                Post? searchResult = await dbContext.Posts.FirstOrDefaultAsync(x => x.Id == id);
+                if (searchResult != null)
+                {
+                    searchResult.IsClosed = true;
+                    await dbContext.SaveChangesAsync();
+
+                    logger?.LogInformation("--- A post has been closed: " + searchResult.Id);
                     return true;
                 }
 
