@@ -41,7 +41,7 @@ else
         }
     </table>
 
-    <input type="button" value="Previous" asp-area="" asp-controller="Forum" asp-action="Index" asp-route-page="@(int.Parse(ViewBag.Page.ToString()) - 1)" />
+    <input type="button" value="Previous" onclick="location.href='@Url.Action("Index", "Forum", new { page = (int.Parse(ViewBag.Page.ToString()) - 1) })'" />
     @ViewBag.Page
-    <input type="button" value="Next" asp-area="" asp-controller="Forum" asp-action="Index" asp-route-page="@(int.Parse(ViewBag.Page.ToString()) + 1)" />
+    <input type="button" value="Next" onclick="location.href='@Url.Action("Index", "Forum", new { page = (int.Parse(ViewBag.Page.ToString()) + 1) })'" />
 }
